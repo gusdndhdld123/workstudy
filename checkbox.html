@@ -1,0 +1,116 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <title>checkboxTest</title>
+</head>
+<body>
+    <div>
+        <div id="allcheckbox"></div>
+        <div id="scopecheckbox"></div>
+        <div id="showregion"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            makecheckbox();
+        });
+
+        // 체크된 지역을 저장할 배열
+        var checkedbox = [];
+
+        // div 안에 체크박스 생성
+        const makecheckbox = () => {
+            var allcheckboxmake = `<label for="all">전체</label>
+            <input type="checkbox" name="all" id="all">`;
+           
+            $('#allcheckbox').append(allcheckboxmake);
+
+            var scopecheckboxmake = `
+            <label for="서울">서울</label>
+            <input type="checkbox" name="서울" id="서울">
+            <label for="대전">대전</label>
+            <input type="checkbox" name="대전" id="대전">
+            <label for="부산">부산</label>
+            <input type="checkbox" name="부산" id="부산">
+            <label for="광주">광주</label>
+            <input type="checkbox" name="광주" id="광주">
+            <label for="경기">경기</label>
+            <input type="checkbox" name="경기" id="경기">
+            <label for="강원">강원</label>
+            <input type="checkbox" name="강원" id="강원">
+            <label for="충청">충청</label>
+            <input type="checkbox" name="충청" id="충청">
+            <label for="전라">전라</label>
+            <input type="checkbox" name="전라" id="전라">
+            <label for="경상">경상</label>
+            <input type="checkbox" name="경상" id="경상">
+            <label for="제주">제주</label>
+            <input type="checkbox" name="제주" id="제주">`;
+            
+            $('#scopecheckbox').append(scopecheckboxmake);
+        }
+
+        // 전체 체크박스 클릭 시 지역 체크박스 전체 선택/해제
+        $(document).on('change', '#all', function() {
+            var isChecked = $(this).is(':checked');
+            $('#scopecheckbox input[type="checkbox"]').prop('checked', isChecked);
+           if(isChecked){
+            checkedbox = [];
+            
+             // 모든 지역 체크박스의 id 속성을 배열에 추가
+             //제이쿼리로 가져온 배열은 map으로 바로 사용 못함 each로 돌려줘야 함.
+            $('#scopecheckbox input[type="checkbox"]').each(function() {
+                var region = $(this).attr('id'); 
+                checkedbox.push(region);
+            });
+            
+           }else{
+            checkedbox = [];
+           }
+           
+            showregion();
+
+        });
+
+        // 개별 지역 체크박스 클릭 시 배열 업데이트
+        $(document).on('change', '#scopecheckbox input[type="checkbox"]', function() {
+            var region = $(this).attr('id');
+
+            if ($(this).is(':checked')) {
+                // 체크되면 배열에 추가
+                if (!checkedbox.includes(region)) {
+                    checkedbox.push(region);
+                }
+            } else {
+                // 체크 해제되면 배열에서 제거
+                checkedbox = checkedbox.filter(function(item) {
+                    return item !== region;
+                });
+            }
+            
+            // 모든 지역 체크박스가 체크되었는지 확인
+            var totalCheckboxes = $('#scopecheckbox input[type="checkbox"]').length;
+            var checkedCheckboxes = $('#scopecheckbox input[type="checkbox"]:checked').length;
+
+            if (totalCheckboxes === checkedCheckboxes) {
+                // 모든 체크박스가 선택되었을 때만 전체 체크박스 체크
+                $('#all').prop('checked', true);
+            } else {
+                // 하나라도 체크 해제되면 전체 체크박스 체크 해제
+                $('#all').prop('checked', false);
+            }
+            showregion();
+        });
+        
+        //map을 사용해서 간결하게 for문 돌림
+        const showregion = () => {
+            
+            let showcheckbox = checkedbox.map(check => `<p>${check}</p>`)
+            
+            $('#showregion').children().remove();
+            $('#showregion').append(showcheckbox);
+        }
+    </script>
+</body>
+</html>
